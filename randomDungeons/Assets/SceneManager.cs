@@ -10,7 +10,7 @@ public class SceneManager : MonoBehaviour {
 	void Start () 
 	{
 		mapGen = new MapGenerator();
-		currentMap = mapGen.NewMap(100, false, 43);
+		currentMap = mapGen.NewMap(50, true, 43);
 	}
 	
 	// Update is called once per frame
@@ -19,7 +19,7 @@ public class SceneManager : MonoBehaviour {
 		
 		if(Input.GetKeyDown(KeyCode.F))
 		{
-			currentMap = mapGen.NewMap(100, true, 43);
+			currentMap = mapGen.NewMap(50, true, 43);
 			colourThing = 0;
 		}
 
@@ -30,27 +30,28 @@ public class SceneManager : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.S))
 		{
 			colourThing--;
-			colourThing = colourThing < 0 ? 0 : colourThing;
+			//colourThing = colourThing < 0 ? 0 : colourThing;
 		}
 	}
 	// for colouring in regions
 	int colourThing = 0;
-
 	void OnDrawGizmos()
 	{
 		if(currentMap != null)
 		{
-			for(int y = 0; y < currentMap.Width(); y++)
+			for(int y = 0; y < currentMap.Width; y++)
 			{
-				for(int x = 0; x < currentMap.Height(); x++)
+				for(int x = 0; x < currentMap.Height; x++)
 				{
 					if(currentMap.TileAt(x,y) == currentMap.FilledCode)
 						Gizmos.color = Color.black;
-					else if(currentMap.TileAt(x, y) == colourThing)
+					else if(x == currentMap.StartPos1.x && y == currentMap.StartPos1.y)
 						Gizmos.color = Color.blue;
+					else if(x == currentMap.StartPos2.x && y == currentMap.StartPos2.y)
+						Gizmos.color = Color.green;
 					else 
 						Gizmos.color = Color.white;
-					Vector3 pos = new Vector3(-currentMap.Width() / 2 + x + 0.5f, 0, -currentMap.Height()/2 + y + 0.5f);
+					Vector3 pos = new Vector3(-currentMap.Width / 2 + x + 0.5f, 0, -currentMap.Height/2 + y + 0.5f);
 					Gizmos.DrawCube(pos, Vector3.one);
 				}
 			}

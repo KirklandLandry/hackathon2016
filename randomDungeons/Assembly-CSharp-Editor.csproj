@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\importedAssets\toon shader\Toony Colors\Editor\TCF_MaterialInspector.cs" />
+     <None Include="Assets\importedAssets\CrystalPack\Shaders\S_Crystal.shader" />
      <None Include="Assets\importedAssets\models\characters\Cha_Data\Shader\WrapLambert.shader" />
      <None Include="Assets\importedAssets\toon shader\Toony Colors\!ToonyColors Readme.txt" />
      <None Include="Assets\importedAssets\toon shader\!JMO Assets Readme.txt" />

@@ -50,6 +50,7 @@
      <Compile Include="Assets\SceneManager.cs" />
      <Compile Include="Assets\importedAssets\models\characters\Cha_Data\Script\ScreenShot.cs" />
      <Compile Include="Assets\importedAssets\toon shader\Toony Colors\Demo 2.0\TCF_Demo.cs" />
+     <None Include="Assets\importedAssets\CrystalPack\Shaders\S_Crystal.shader" />
      <None Include="Assets\importedAssets\models\characters\Cha_Data\Shader\WrapLambert.shader" />
      <None Include="Assets\importedAssets\toon shader\Toony Colors\!ToonyColors Readme.txt" />
      <None Include="Assets\importedAssets\toon shader\!JMO Assets Readme.txt" />

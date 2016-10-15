@@ -51,6 +51,9 @@ public class MapGenerator {
 		ConnectClosestRegions(regionsList, newMap, size);
 
 
+		ConvertMapBackToBasic(newMap, size);
+
+
 		return new Map(size, size, filled, empty, newMap);
 	} 
 
@@ -62,7 +65,7 @@ public class MapGenerator {
 
 		if(useRandomSeed)
 		{
-			seed = System.DateTime.Now.ToString();
+			seed = System.DateTime.Now.Millisecond.ToString();
 		}
 
 		System.Random prng = new System.Random(seed.GetHashCode());
@@ -186,7 +189,7 @@ public class MapGenerator {
 					Vector2i currentPoint = new Vector2i(x,y);  
 					Queue<Vector2i> cellsToCheck = new Queue<Vector2i>();
 					cellsToCheck.Enqueue(currentPoint);
-					Region newRegion = new Region(currentRegionID);
+					Region newRegion = new Region();
 
 					while(cellsToCheck.Count > 0)
 					{ 
@@ -458,6 +461,20 @@ public class MapGenerator {
 		return line;
 	}
 
+	public void ConvertMapBackToBasic(int[,] map, int size)
+	{
+		for(int y = 0; y < size; y++)
+		{
+			for(int x = 0; x < size; x++)
+			{
+				if(map[y,x] != filled)
+				{
+					map[y,x] = empty;
+				}
+			}
+		}
+	}
+
 	Vector3 CoordToWorldPoint(Vector2i tile)
 	{
 		return new Vector3(-100 / 2 + 0.5f + tile.x, 2, -100 / 2 + 0.5f + tile.y);
@@ -475,7 +492,7 @@ public class MapGenerator {
 public class Region : IComparable<Region>
 {
 	// not really using this id for anything
-	public int id;
+	//public int id;
 
 	public List<Vector2i> tiles;
 	public List<Vector2i> edgeTiles;
@@ -491,13 +508,13 @@ public class Region : IComparable<Region>
 		this.connectedRegions = new List<Region>();
 	}
 
-	public Region(int id)
+	/*public Region(int id)
 	{
 		this.id = id;
 		this.tiles = new List<Vector2i>();
 		this.edgeTiles = new List<Vector2i>();
 		this.connectedRegions = new List<Region>();
-	}
+	}*/
 
 	public void AddTile(Vector2i tile, bool isEdgeTile)
 	{
