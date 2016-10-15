@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour {
 
@@ -10,10 +11,34 @@ public class PlayerController : MonoBehaviour {
 	public Camera thisCamera;
 	public GameObject model;
 
+	//private List<AnimationState> animationList;
+	private List<string> animationNameList;
+
 	void Start () 
 	{
 		// prevent physics based rotations
 		transform.GetComponent<Rigidbody>().freezeRotation = true;
+	
+		animationNameList = new List<string>();
+		int count = 0;
+
+
+
+		foreach(AnimationState anim in model.transform.GetComponent<Animation>())
+		{
+			animationNameList.Add(anim.name);
+			print(animationNameList[count]);
+			if (count >= 2)
+			{
+				anim.wrapMode = WrapMode.Once;
+			}
+			else 
+			{
+				anim.wrapMode = WrapMode.Loop;
+			}
+			count++;
+		}
+
 	}
 	
 	void Update () 
@@ -73,9 +98,30 @@ public class PlayerController : MonoBehaviour {
 			// top of screen is (-)
 			// bottom of screen is (+)
 			model.transform.rotation =  Quaternion.Euler (new Vector3(0f,-angle - 90, 0f));
-			Debug.Assert(1==0, angle);
 
 			transform.GetComponent<Rigidbody>().velocity = velocity;
+
+
+			//print(velocity.x + ", " + velocity.z);
+
+			if( (Mathf.Abs(velocity.x) > 0.05f || Mathf.Abs(velocity.z) > 0.05f))
+			{
+				print("asdf");
+				model.GetComponent<Animation>().Play(animationNameList[1]);
+			}
+			else if(!model.GetComponent<Animation>().IsPlaying(animationNameList[0]))
+			{
+				print("halt");
+				model.GetComponent<Animation>().Play(animationNameList[0]);
+			}
+
+			//int clipCount = model.GetComponent<Animation>().GetClipCount();
+			/*if(!model.GetComponent<Animation>().IsPlaying(animationNameList[2]))
+			{
+				print("attack");
+				model.GetComponent<Animation>().Play(animationNameList[2]);
+			}*/
+
 
 		}
 
