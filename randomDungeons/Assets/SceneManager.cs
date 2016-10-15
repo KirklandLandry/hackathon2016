@@ -20,6 +20,7 @@ public class SceneManager : MonoBehaviour {
 		if(Input.GetKeyDown(KeyCode.F))
 		{
 			currentMap = mapGen.NewMap(100, true, 43);
+			colourThing = 0;
 		}
 
 		if(Input.GetKeyDown(KeyCode.W))
@@ -47,8 +48,6 @@ public class SceneManager : MonoBehaviour {
 						Gizmos.color = Color.black;
 					else if(currentMap.TileAt(x, y) == colourThing)
 						Gizmos.color = Color.blue;
-					else if(currentMap.TileAt(x, y) == 99)
-						Gizmos.color = Color.red;
 					else 
 						Gizmos.color = Color.white;
 					Vector3 pos = new Vector3(-currentMap.Width() / 2 + x + 0.5f, 0, -currentMap.Height()/2 + y + 0.5f);

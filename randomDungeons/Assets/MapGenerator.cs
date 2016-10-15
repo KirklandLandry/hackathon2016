@@ -24,6 +24,7 @@ public class MapGenerator {
 
 	}
 
+	// returns a new map
 	public Map NewMap(int size, bool useRandomSeed, int chanceToStartAlive)
 	{
 		
@@ -38,15 +39,20 @@ public class MapGenerator {
 		}
 
 		// detect the regions (concave sets of empty tiles)
-		//List<Region> regionsList = DetectRegions(newMap, size);
 		List<Region> regionsList = DetectRegions(newMap, size);
-		regionsList = RemoveSmallRegions(newMap, regionsList);
+		// remove all regions that're too small
+		regionsList = RemoveSmallRegions(newMap, regionsList, 17);
+		// sort it so that the larget region is first 
+		regionsList.Sort();
+		regionsList[0].isMainRegion = true;
+		regionsList[0].isAccessibleFromMainRegion = true;
 
+		ConnectClosestRegions(regionsList);
 
 		return new Map(size, size, filled, empty, newMap);
 	} 
 
-
+	// randomly fill a 2D array with either filled or non filled
 	private void FillRandomly(int[,] map, bool useRandomSeed, int chanceToStartAlive)
 	{
 		int width = map.GetLength(1);
@@ -75,6 +81,7 @@ public class MapGenerator {
 		}
 	}
 
+	// perform another cellular automata simulation step
 	private void DoSimulationStep(int[,] map, int size)
 	{
 		for(int y = 0; y < size; y++)
@@ -122,6 +129,7 @@ public class MapGenerator {
 		}
 	}
 
+	// check how many alive (filled) regions surround the current tile
 	private int CountAliveNeighbours(int[,] map, int x, int y, int size)
 	{
 		// getting the total count of alive neighbours
@@ -149,87 +157,9 @@ public class MapGenerator {
 		}
 		return count;
 	}
+		
 
-	/*List<Vector2i> GetRegionTiles(int startX, int startY, int[,] map)
-	{
-
-	}*/
-
-	/*
-	private List<Region> DetectRegions(int[,] map, int size )
-	{
-		int currentRegionID = startingRegionsID;
-		List<Region> regions = new List<Region>();
-
-		for(int y = 1; y < size - 1; y++)
-		{
-			for(int x = 1; x < size - 1; x++)
-			{
-				if(map[y, x] == filled)
-				{
-					// ignore walls
-				}
-				// if the tile is not a wall and not marked as a region yet
-				else if(map[y, x] == empty)
-				{
-					// floodfill for new region creation
-
-					Vector2i currentCell = new Vector2i(x, y);
-					Queue<Vector2i> cellsToCheck = new Queue<Vector2i>();
-					cellsToCheck.Enqueue(currentCell);
-					Region newRegion = new Region(currentRegionID);
-
-
-					while(cellsToCheck.Count > 0)
-					{
-						// get the current cell
-						currentCell = cellsToCheck.Dequeue();
-
-						// if the dequeued cell isn't already a part of this region
-						if(map[currentCell.y, currentCell.x] != currentRegionID)
-						{
-							// add current point to the region
-							map[currentCell.y, currentCell.x] = currentRegionID;
-
-							// if it's an edge cell
-							if(map[currentCell.y + 1, currentCell.x] == filled ||
-								map[currentCell.y - 1, currentCell.x] == filled ||
-								map[currentCell.y, currentCell.x + 1] == filled ||
-								map[currentCell.y, currentCell.x - 1] == filled)
-							{
-								newRegion.AddTile(currentCell, true);
-							}
-							// else it's not an edge tile
-							else 
-							{
-								newRegion.AddTile(currentCell, false);
-							}
-
-							// because the border is always set to be walls, we don't need to worry about out of bounds errors
-							if(map[currentCell.y + 1, currentCell.x] == empty)
-								cellsToCheck.Enqueue(new Vector2i(currentCell.y + 1, currentCell.x));
-
-							if(map[currentCell.y - 1, currentCell.x] == empty)
-								cellsToCheck.Enqueue(new Vector2i(currentCell.y - 1, currentCell.x));
-
-							if(map[currentCell.y, currentCell.x + 1] == empty)
-								cellsToCheck.Enqueue(new Vector2i(currentCell.y, currentCell.x + 1));
-
-							if(map[currentCell.y, currentCell.x - 1] == empty)
-								cellsToCheck.Enqueue(new Vector2i(currentCell.y, currentCell.x - 1));
-
-						}
-					}
-					regions.Add(newRegion);
-					currentRegionID++;
-				}
-			}
-		}
-		return regions;
-	}
-	*/
-
-
+	// use floodfill to detect regions
 	private List<Region> DetectRegions(int[,] newMap, int size) 
 	{ 
 		// count will indicate regions. each region will have it's own number
@@ -301,14 +231,15 @@ public class MapGenerator {
 		return regions;
 	}
 
-	private List<Region> RemoveSmallRegions(int[,] map, List<Region> regionList)
+	// remove any regions below a certain size threshold
+	private List<Region> RemoveSmallRegions(int[,] map, List<Region> regionList, int sizeThreshold)
 	{
 		List<Region> trimmedRegionList = new List<Region>();
 		for(int i = 0; i < regionList.Count; i++)
 		{
-			if(regionList[i].roomSize <= 17)
+			if(regionList[i].regionSize <= sizeThreshold)
 			{
-				for(int j = 0; j < regionList[i].roomSize; j++)
+				for(int j = 0; j < regionList[i].regionSize; j++)
 				{
 					map[regionList[i].tiles[j].y, regionList[i].tiles[j].x] = filled;
 				}
@@ -321,7 +252,127 @@ public class MapGenerator {
 		return trimmedRegionList;
 	}
 
+	// connects regions a and b 
+	private void ConnectRegions(Region a, Region b)
+	{
+		if(a.isAccessibleFromMainRegion)
+		{
+			b.SetAccessibleFromMainRegion();
+		}
+		else if(b.isAccessibleFromMainRegion)
+		{
+			a.SetAccessibleFromMainRegion();
+		}
+		a.connectedRegions.Add(b);
+		b.connectedRegions.Add(a);
+	}
 
+	// find and connect regions closest to each other
+	// in the first pass when not forcing accessibility to the main region all it will do is connect to the closest region and that's it
+	// in the next pass when forcing accessibility to the main region, look for whichever connected room is closest to the main region (but not connected) and connect that one to the main region
+	private void ConnectClosestRegions(List<Region> regions, bool forceAccessibleFromMainRegion = false)
+	{
+		// regions not accessible from the main room
+		List<Region> roomListA = new List<Region>();
+		// regions accessible from the main room
+		List<Region> roomListB = new List<Region>();
+
+		if(forceAccessibleFromMainRegion)
+		{
+			foreach(Region r in regions)
+			{
+				if(r.isAccessibleFromMainRegion)
+				{
+					roomListB.Add(r);
+				}
+				else 
+				{
+					roomListA.Add(r);
+				}
+			}
+		}
+		else 
+		{
+			roomListA = regions;
+			roomListB = regions;
+		}
+
+		int bestDist = 0;
+		Vector2i bestTileA = new Vector2i();
+		Vector2i bestTileB = new Vector2i();
+		Region bestRegionA = new Region();
+		Region bestRegionB = new Region();
+		bool possibleConnectionFound = false;
+
+		foreach(Region regionA in roomListA)
+		{
+			// don't want to do this when forcing accessibility because we're not just looking for the first connection
+			// we're looking for the closest connection to the main room based on adjacent rooms
+			// we're always considering all adjacent rooms before making the connection
+			if(!forceAccessibleFromMainRegion)
+			{
+				possibleConnectionFound = false;
+				if(regionA.connectedRegions.Count > 0)
+					continue;
+			}
+			foreach(Region regionB in roomListB)
+			{
+				// if the regions are equal, don't bother comparing them
+				if(regionA == regionB || regionA.IsConnected(regionB))
+					continue;
+
+					
+				for(int tileIndexA = 0; tileIndexA < regionA.edgeTiles.Count; tileIndexA++)
+				{
+					for(int tileIndexB = 0; tileIndexB < regionB.edgeTiles.Count; tileIndexB++)
+					{
+						Vector2i tileA = regionA.edgeTiles[tileIndexA];
+						Vector2i tileB = regionB.edgeTiles[tileIndexB];
+						int distBetweenRegions = (int)(Mathf.Pow(tileA.x - tileB.x, 2) + Mathf.Pow(tileA.y - tileB.y, 2));
+
+						if(distBetweenRegions < bestDist || !possibleConnectionFound)
+						{
+							bestDist = distBetweenRegions;
+							possibleConnectionFound = true;
+							bestTileA = tileA;
+							bestTileB = tileB;
+							bestRegionA = regionA;
+							bestRegionB = regionB;
+						}
+					}
+				}
+			}
+			if(possibleConnectionFound && !forceAccessibleFromMainRegion)
+			{
+				CreatePassage(bestRegionA, bestRegionB, bestTileA, bestTileB);
+			}
+		}
+
+		// out here because we're considering all adjacent rooms, not just the best room
+		if(possibleConnectionFound && forceAccessibleFromMainRegion)
+		{
+			CreatePassage(bestRegionA, bestRegionB, bestTileA, bestTileB);
+			ConnectClosestRegions(regions, true);
+		}
+
+		if(!forceAccessibleFromMainRegion)
+		{
+			ConnectClosestRegions(regions, true);
+		}
+	}
+
+	private void CreatePassage(Region regionA, Region regionB, Vector2i tileA, Vector2i tileB)
+	{
+		ConnectRegions(regionA, regionB);
+		Debug.DrawLine(CoordToWorldPoint(tileA), CoordToWorldPoint(tileB), Color.green, 100);
+	}
+
+	Vector3 CoordToWorldPoint(Vector2i tile)
+	{
+		return new Vector3(-100 / 2 + 0.5f + tile.x, 2, -100 / 2 + 0.5f + tile.y);
+	}
+
+	// is an x,y coord withing the bounds of the map
 	private bool IsInMapRange(int x, int y, int size)
 	{
 		return x >= 0 && x < size && y >= 0 && y < size;
@@ -330,14 +381,24 @@ public class MapGenerator {
 }
 
 
-public class Region
+public class Region : IComparable<Region>
 {
+	// not really using this id for anything
 	public int id;
 
 	public List<Vector2i> tiles;
 	public List<Vector2i> edgeTiles;
 	public List<Region> connectedRegions;
-	public int roomSize;
+	public int regionSize;
+	public bool isAccessibleFromMainRegion;
+	public bool isMainRegion;
+
+	public Region()
+	{
+		this.tiles = new List<Vector2i>();
+		this.edgeTiles = new List<Vector2i>();
+		this.connectedRegions = new List<Region>();
+	}
 
 	public Region(int id)
 	{
@@ -352,8 +413,31 @@ public class Region
 		tiles.Add(tile);
 		if(isEdgeTile)
 			edgeTiles.Add(tile);
-		roomSize++;
+		regionSize++;
 	}
+
+	public bool IsConnected(Region otherRegion)
+	{
+		return connectedRegions.Contains(otherRegion);
+	}
+
+	public void SetAccessibleFromMainRegion()
+	{
+		if(!isAccessibleFromMainRegion)
+		{
+			isAccessibleFromMainRegion = true;
+			foreach(Region connected in connectedRegions)
+			{
+				connected.SetAccessibleFromMainRegion();
+			}
+		}
+	}
+
+	public int CompareTo(Region otherRegion)
+	{
+		return otherRegion.regionSize.CompareTo(regionSize);
+	}
+
 }
 
 public struct Vector2i
