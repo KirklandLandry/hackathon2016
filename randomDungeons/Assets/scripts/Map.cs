@@ -32,7 +32,7 @@ public class Map {
 		this.empty = empty;
 		this.internalMap = map;
 
-		float interval = (Mathf.Sqrt(width*width + height*height) * 3.0f/4.0f);
+		float interval = (Mathf.Sqrt(width*width + height*height) );
 		int iterations = 0;
 		while(true)
 		{
