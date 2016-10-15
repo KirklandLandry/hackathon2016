@@ -9,7 +9,7 @@ public class MapGenerator {
 
 	private int deathLimit = 3;
 	private int birthLimit = 4;
-	private int numberOfSimulationSteps = 19;
+	private int numberOfSimulationSteps = 9;
 
 	private int filled = -1;
 	private int empty = -2;
@@ -47,7 +47,9 @@ public class MapGenerator {
 		regionsList[0].isMainRegion = true;
 		regionsList[0].isAccessibleFromMainRegion = true;
 
-		ConnectClosestRegions(regionsList);
+		// make all regions connected
+		ConnectClosestRegions(regionsList, newMap, size);
+
 
 		return new Map(size, size, filled, empty, newMap);
 	} 
@@ -270,11 +272,9 @@ public class MapGenerator {
 	// find and connect regions closest to each other
 	// in the first pass when not forcing accessibility to the main region all it will do is connect to the closest region and that's it
 	// in the next pass when forcing accessibility to the main region, look for whichever connected room is closest to the main region (but not connected) and connect that one to the main region
-	private void ConnectClosestRegions(List<Region> regions, bool forceAccessibleFromMainRegion = false)
+	private void ConnectClosestRegions(List<Region> regions, int[,] map, int size, bool forceAccessibleFromMainRegion = false)
 	{
-		// regions not accessible from the main room
 		List<Region> roomListA = new List<Region>();
-		// regions accessible from the main room
 		List<Region> roomListB = new List<Region>();
 
 		if(forceAccessibleFromMainRegion)
@@ -283,10 +283,12 @@ public class MapGenerator {
 			{
 				if(r.isAccessibleFromMainRegion)
 				{
+					// regions accessible from the main room
 					roomListB.Add(r);
 				}
 				else 
 				{
+					// regions not accessible from the main room
 					roomListA.Add(r);
 				}
 			}
@@ -344,27 +346,116 @@ public class MapGenerator {
 			}
 			if(possibleConnectionFound && !forceAccessibleFromMainRegion)
 			{
-				CreatePassage(bestRegionA, bestRegionB, bestTileA, bestTileB);
+				CreatePassage(bestRegionA, bestRegionB, bestTileA, bestTileB, map, size);
 			}
 		}
 
 		// out here because we're considering all adjacent rooms, not just the best room
 		if(possibleConnectionFound && forceAccessibleFromMainRegion)
 		{
-			CreatePassage(bestRegionA, bestRegionB, bestTileA, bestTileB);
-			ConnectClosestRegions(regions, true);
+			CreatePassage(bestRegionA, bestRegionB, bestTileA, bestTileB, map, size);
+			ConnectClosestRegions(regions, map, size, true);
 		}
 
 		if(!forceAccessibleFromMainRegion)
 		{
-			ConnectClosestRegions(regions, true);
+			ConnectClosestRegions(regions, map, size, true);
 		}
 	}
 
-	private void CreatePassage(Region regionA, Region regionB, Vector2i tileA, Vector2i tileB)
+	private void CreatePassage(Region regionA, Region regionB, Vector2i tileA, Vector2i tileB, int[,] map, int size) 
 	{
 		ConnectRegions(regionA, regionB);
-		Debug.DrawLine(CoordToWorldPoint(tileA), CoordToWorldPoint(tileB), Color.green, 100);
+		//Debug.DrawLine(CoordToWorldPoint(tileA), CoordToWorldPoint(tileB), Color.green, 100);
+
+		List<Vector2i> line = GetLine(tileA, tileB);
+		foreach(Vector2i c in line)
+		{
+			DrawCircle(c, 2, map, size);
+		}
+
+	}
+
+	void DrawCircle(Vector2i c, int r, int[,] map, int size)
+	{
+		for(int x = -r; x <= r; x++)
+		{
+			for(int y = -r; y <= r; y++)
+			{
+				if(x*x + y*y <= r*r)
+				{
+					int drawX = c.x + x;
+					int drawY = c.y + y;
+
+					if(IsInMapRange(drawX, drawY, size))
+					{
+						map[drawY, drawX] = empty;
+					}
+				}
+			}
+		}
+	}
+
+	// 4:30 am, too tired. will comment later when I can math and also think.
+	List<Vector2i> GetLine(Vector2i from, Vector2i to)
+	{
+		List<Vector2i> line = new List<Vector2i>();
+
+		int x = from.x;
+		int y = from.y;
+
+		int dx = to.x - from.x;
+		int dy = to.y - from.y;
+
+		bool inverted = false;
+
+		// x step 
+		int step = Math.Sign(dx);
+		// y step
+		int gradientStep = Math.Sign(dy);
+
+		int longest = Mathf.Abs(dx);
+		int shortest = Mathf.Abs(dy);
+
+		if(longest < shortest)
+		{
+			inverted = true;
+			longest = Mathf.Abs(dy);
+			shortest = Mathf.Abs(dx);
+
+			step = Math.Sign(dy);
+			gradientStep = Math.Sign(dx);
+		}
+
+		int gradientAccumulation = longest / 2;
+		for(int i = 0; i < longest; i++)
+		{
+			line.Add(new Vector2i(x,y));
+
+			if(inverted) 
+			{
+				y += step;
+			}
+			else 
+			{
+				x += step;
+			}
+
+			gradientAccumulation += shortest;
+			if(gradientAccumulation >= shortest) 
+			{
+				if(inverted)
+				{
+					x+= gradientStep;
+				}
+				else 
+				{
+					y += gradientStep;
+				}
+				gradientAccumulation -= longest;
+			}
+		}
+		return line;
 	}
 
 	Vector3 CoordToWorldPoint(Vector2i tile)
