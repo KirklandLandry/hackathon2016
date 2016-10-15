@@ -38,7 +38,10 @@ public class MapGenerator {
 		}
 
 		// detect the regions (concave sets of empty tiles)
+		//List<Region> regionsList = DetectRegions(newMap, size);
 		List<Region> regionsList = DetectRegions(newMap, size);
+		regionsList = RemoveSmallRegions(newMap, regionsList);
+
 
 		return new Map(size, size, filled, empty, newMap);
 	} 
@@ -152,7 +155,7 @@ public class MapGenerator {
 
 	}*/
 
-
+	/*
 	private List<Region> DetectRegions(int[,] map, int size )
 	{
 		int currentRegionID = startingRegionsID;
@@ -162,7 +165,7 @@ public class MapGenerator {
 		{
 			for(int x = 1; x < size - 1; x++)
 			{
-				if(map[y, x] == 1)
+				if(map[y, x] == filled)
 				{
 					// ignore walls
 				}
@@ -224,6 +227,100 @@ public class MapGenerator {
 		}
 		return regions;
 	}
+	*/
+
+
+	private List<Region> DetectRegions(int[,] newMap, int size) 
+	{ 
+		// count will indicate regions. each region will have it's own number
+		int currentRegionID = startingRegionsID;
+		//int[,] newMap = oldMap;
+
+		List<Region> regions = new List<Region>();
+
+		// can ignore first and last rows/columns because they're set to always be walls
+		// this numbering system is bad / inconstent. change 1 to unfilled, 0 to filled.
+		for (int y = 1; y < size - 1; y++)
+		{
+			for (int x = 1; x < size - 1; x++)
+			{
+				if(newMap[y,x]==filled)
+				{
+					// ignore it, it's a wall
+				}
+				else if (newMap[y, x] == empty) // if it's not already marked as a new region
+				{
+					// floodfill to create a new region
+					Vector2i currentPoint = new Vector2i(x,y);  
+					Queue<Vector2i> cellsToCheck = new Queue<Vector2i>();
+					cellsToCheck.Enqueue(currentPoint);
+					Region newRegion = new Region(currentRegionID);
+
+					while(cellsToCheck.Count > 0)
+					{ 
+						// get the first point
+						currentPoint = cellsToCheck.Dequeue();
+						// if the dequeued point isn't part of this region
+
+						if (newMap[currentPoint.y, currentPoint.x] != currentRegionID )
+						{
+							// add the point to the region
+							newMap[currentPoint.y, currentPoint.x] = currentRegionID;
+
+							// if it's an edge cell
+							if(newMap[currentPoint.y + 1, currentPoint.x] == filled ||
+								newMap[currentPoint.y - 1, currentPoint.x] == filled ||
+								newMap[currentPoint.y, currentPoint.x + 1] == filled ||
+								newMap[currentPoint.y, currentPoint.x - 1] == filled)
+							{
+								newRegion.AddTile(currentPoint, true);
+							}
+							else { newRegion.AddTile(currentPoint, false); }
+
+
+							// because the border is always set to be walls, we don't need to worry about out of bounds errors
+							if (newMap[currentPoint.y, currentPoint.x + 1] == empty)
+								cellsToCheck.Enqueue(new Vector2i(currentPoint.x + 1, currentPoint.y));
+
+							if (newMap[currentPoint.y, currentPoint.x - 1] == empty)
+								cellsToCheck.Enqueue(new Vector2i(currentPoint.x - 1, currentPoint.y));
+
+							if (newMap[currentPoint.y + 1, currentPoint.x] == empty)
+								cellsToCheck.Enqueue(new Vector2i(currentPoint.x, currentPoint.y + 1));
+
+							if (newMap[currentPoint.y - 1, currentPoint.x] == empty)
+								cellsToCheck.Enqueue(new Vector2i(currentPoint.x, currentPoint.y - 1));
+						}
+					}
+					regions.Add(newRegion);
+					currentRegionID++;
+				}
+
+			}
+		}
+		return regions;
+	}
+
+	private List<Region> RemoveSmallRegions(int[,] map, List<Region> regionList)
+	{
+		List<Region> trimmedRegionList = new List<Region>();
+		for(int i = 0; i < regionList.Count; i++)
+		{
+			if(regionList[i].roomSize <= 17)
+			{
+				for(int j = 0; j < regionList[i].roomSize; j++)
+				{
+					map[regionList[i].tiles[j].y, regionList[i].tiles[j].x] = filled;
+				}
+			}
+			else 
+			{
+				trimmedRegionList.Add(regionList[i]);
+			}
+		}
+		return trimmedRegionList;
+	}
+
 
 	private bool IsInMapRange(int x, int y, int size)
 	{
@@ -255,6 +352,7 @@ public class Region
 		tiles.Add(tile);
 		if(isEdgeTile)
 			edgeTiles.Add(tile);
+		roomSize++;
 	}
 }
 
