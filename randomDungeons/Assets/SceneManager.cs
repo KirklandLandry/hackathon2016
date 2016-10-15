@@ -17,6 +17,10 @@ public class SceneManager : MonoBehaviour {
 	void Update () 
 	{
 		print(currentMap.Width());
+		if(Input.GetKeyDown(KeyCode.F))
+		{
+			currentMap = mapGen.NewMap(100, true, 43);
+		}
 	}
 
 	void OnDrawGizmos()
