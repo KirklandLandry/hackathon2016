@@ -2,6 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 
+
+// SPAWN BEACON RULES 
+// can't get hit if you're int a spawn beacon
+// also can't advance it the other person is in the spawn beacon
+
 public class SceneManager : MonoBehaviour {
 
 	MapGenerator mapGen;
@@ -17,21 +22,30 @@ public class SceneManager : MonoBehaviour {
 
 	private List<GameObject> currentSceneObjects;
 
-
+	GameObject p1Beacon;
+	GameObject p2Beacon;
 
 	// Use this for initialization
 	void Start () 
 	{
 		currentSceneObjects = new List<GameObject>();
 		mapGen = new MapGenerator();
-		currentMap = mapGen.NewMap(50, true, 43);
+		currentMap = mapGen.NewMap(20, true, 43);
 		PlaceEnvironment();
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		
+		if(p1Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
+		{
+			print("p2 wins");
+		}
+		else if (p2Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
+		{
+			print("p1 wins");
+		}
+
 	}
 
 	void PlaceEnvironment()
@@ -59,37 +73,15 @@ public class SceneManager : MonoBehaviour {
 		p2Avatar.transform.position = new Vector3(currentMap.StartPos2.x, 0, currentMap.StartPos2.y);
 
 
-		GameObject p1Beacon = (GameObject)GameObject.Instantiate(spawnBeacon, new Vector3(currentMap.StartPos1.x, 0, currentMap.StartPos1.y), Quaternion.identity, parent.transform);
+		p1Beacon = (GameObject)GameObject.Instantiate(spawnBeacon, new Vector3(currentMap.StartPos1.x, 0, currentMap.StartPos1.y), Quaternion.identity, parent.transform);
 		currentSceneObjects.Add(p1Beacon);
+		p1Beacon.GetComponent<SpawnBeaconController>().SetTargetTag("player2");
 
-		GameObject p2Beacon = (GameObject)GameObject.Instantiate(spawnBeacon, new Vector3(currentMap.StartPos2.x, 0, currentMap.StartPos2.y), Quaternion.identity, parent.transform);
+		p2Beacon = (GameObject)GameObject.Instantiate(spawnBeacon, new Vector3(currentMap.StartPos2.x, 0, currentMap.StartPos2.y), Quaternion.identity, parent.transform);
 		currentSceneObjects.Add(p2Beacon);
+		p2Beacon.GetComponent<SpawnBeaconController>().SetTargetTag("player1");
 
 	}
 
-	/*
-	// for colouring in regions
-	void OnDrawGizmos()
-	{
-		if(currentMap != null)
-		{
-			for(int y = 0; y < currentMap.Width; y++)
-			{
-				for(int x = 0; x < currentMap.Height; x++)
-				{
-					if(currentMap.TileAt(x,y) == currentMap.FilledCode)
-						Gizmos.color = Color.black;
-					else if(x == currentMap.StartPos1.x && y == currentMap.StartPos1.y)
-						Gizmos.color = Color.blue;
-					else if(x == currentMap.StartPos2.x && y == currentMap.StartPos2.y)
-						Gizmos.color = Color.green;
-					else 
-						Gizmos.color = Color.white;
-					Vector3 pos = new Vector3(-currentMap.Width / 2 + x + 0.5f, 0, -currentMap.Height/2 + y + 0.5f);
-					Gizmos.DrawCube(pos, Vector3.one);
-				}
-			}
-		}
-	}
-	*/
+
 }

@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour {
 		foreach(AnimationState anim in model.transform.GetComponent<Animation>())
 		{
 			animationNameList.Add(anim.name);
-			print(animationNameList[count]);
+			//print(animationNameList[count]);
 			if (count >= 2)
 			{
 				anim.wrapMode = WrapMode.Once;
@@ -106,12 +106,12 @@ public class PlayerController : MonoBehaviour {
 
 			if( (Mathf.Abs(velocity.x) > 0.05f || Mathf.Abs(velocity.z) > 0.05f))
 			{
-				print("asdf");
+				//print("go");
 				model.GetComponent<Animation>().Play(animationNameList[1]);
 			}
 			else if(!model.GetComponent<Animation>().IsPlaying(animationNameList[0]))
 			{
-				print("halt");
+				//print("halt");
 				model.GetComponent<Animation>().Play(animationNameList[0]);
 			}
 
