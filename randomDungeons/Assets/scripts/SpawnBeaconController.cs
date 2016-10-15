@@ -46,7 +46,7 @@ public class SpawnBeaconController : MonoBehaviour {
 		{
 			containsPlayer2 = true;
 		}
-		print(colliderTag + " enter" + (targetTag == "player1" ? " p2 spawn" : "p1 spawn"));
+		//print(colliderTag + " enter" + (targetTag == "player1" ? " p2 spawn" : "p1 spawn"));
 	}
 
 
@@ -60,7 +60,7 @@ public class SpawnBeaconController : MonoBehaviour {
 		{
 			containsPlayer2 = false;
 		}
-		print(colliderTag + " exit" + (targetTag == "player1" ? " p2 spawn" : "p1 spawn"));
+		//print(colliderTag + " exit" + (targetTag == "player1" ? " p2 spawn" : "p1 spawn"));
 	}
 
 }

@@ -35,7 +35,7 @@ public class SceneManager : MonoBehaviour {
 		activeParticleSystems = new List<ParticleSystem>();
 
 		mapGen = new MapGenerator();
-		currentMap = mapGen.NewMap(40, true, 44);
+		currentMap = mapGen.NewMap(30, true, 44);
 		PlaceEnvironment();
 	}
 
@@ -96,8 +96,9 @@ public class SceneManager : MonoBehaviour {
 		}
 
 		p1Avatar.transform.position = new Vector3(currentMap.StartPos1.x, 0, currentMap.StartPos1.y);
+		p1Avatar.transform.GetComponent<PlayerController>().startPos = p1Avatar.transform.position;
 		p2Avatar.transform.position = new Vector3(currentMap.StartPos2.x, 0, currentMap.StartPos2.y);
-
+		p2Avatar.transform.GetComponent<PlayerController>().startPos = p2Avatar.transform.position;
 
 		p1Beacon = (GameObject)GameObject.Instantiate(spawnBeacon, new Vector3(currentMap.StartPos1.x, 0, currentMap.StartPos1.y), Quaternion.identity, parent.transform);
 		currentSceneObjects.Add(p1Beacon);
