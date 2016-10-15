@@ -3,6 +3,8 @@ using System.Collections;
 
 public class SpawnBeaconController : MonoBehaviour {
 
+	public ParticleSystem spawnEffect;
+
 	string targetTag;// = "player2";
 
 	bool containsPlayer1;
@@ -11,6 +13,11 @@ public class SpawnBeaconController : MonoBehaviour {
 	public void SetTargetTag(string target)
 	{
 		this.targetTag = target;
+	}
+
+	public ParticleSystem SpawnEffect(Vector3 position)
+	{
+		return (ParticleSystem)Instantiate(spawnEffect, position, Quaternion.identity);
 	}
 
 	public bool WinConditionSatisfied()

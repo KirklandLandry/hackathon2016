@@ -53,6 +53,7 @@
      <None Include="Assets\importedAssets\toon shader\Toony Colors\Shaders 2.0\Rim Outline.shader" />
      <None Include="Assets\importedAssets\toon shader\Toony Colors\Shaders 2.0\Rim Lighting.shader" />
      <None Include="Assets\importedAssets\toon shader\Toony Colors\Shaders 2.0\Regular.shader" />
+     <None Include="Assets\Particle Ribbon\readme_Simple_Particle_Ribbon.txt" />
      <None Include="Assets\importedAssets\toon shader\Toony Colors\Shaders 2.0\Rim Alpha.shader" />
  <Reference Include="Assembly-UnityScript">
  <HintPath>/Users/Kirk/Desktop/hackWestern/randomDungeons/Library/ScriptAssemblies/Assembly-UnityScript.dll</HintPath>

@@ -45,6 +45,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Particle Ribbon\Scripts\ReverseNormals.cs" />
      <Compile Include="Assets\importedAssets\models\characters\Cha_Data\Script\ScreenShot.cs" />
      <Compile Include="Assets\importedAssets\toon shader\Toony Colors\Demo 2.0\TCF_Demo.cs" />
      <Compile Include="Assets\scripts\Map.cs" />
@@ -60,6 +61,7 @@
      <None Include="Assets\importedAssets\toon shader\Toony Colors\Shaders 2.0\Rim Outline.shader" />
      <None Include="Assets\importedAssets\toon shader\Toony Colors\Shaders 2.0\Rim Lighting.shader" />
      <None Include="Assets\importedAssets\toon shader\Toony Colors\Shaders 2.0\Regular.shader" />
+     <None Include="Assets\Particle Ribbon\readme_Simple_Particle_Ribbon.txt" />
      <None Include="Assets\importedAssets\toon shader\Toony Colors\Shaders 2.0\Rim Alpha.shader" />
  <Reference Include="UnityEngine.UI">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>

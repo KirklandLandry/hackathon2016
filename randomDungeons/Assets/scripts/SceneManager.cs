@@ -21,35 +21,61 @@ public class SceneManager : MonoBehaviour {
 	public GameObject p2Avatar;
 
 	private List<GameObject> currentSceneObjects;
+	private List<ParticleSystem> activeParticleSystems;
 
 	GameObject p1Beacon;
 	GameObject p2Beacon;
+
+	bool gameActive = false;
 
 	// Use this for initialization
 	void Start () 
 	{
 		currentSceneObjects = new List<GameObject>();
+		activeParticleSystems = new List<ParticleSystem>();
+
 		mapGen = new MapGenerator();
-		currentMap = mapGen.NewMap(20, true, 43);
+		currentMap = mapGen.NewMap(40, true, 44);
 		PlaceEnvironment();
 	}
-	
+
+
+
 	// Update is called once per frame
 	void Update () 
 	{
-		if(p1Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
+		if(gameActive)
 		{
-			print("p2 wins");
+			/*if(p1Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
+			{
+				print("p2 wins");
+			}
+			else if (p2Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
+			{
+				print("p1 wins");
+			}*/
 		}
-		else if (p2Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
+		if(Input.GetKeyDown(KeyCode.G))
 		{
-			print("p1 wins");
+			TearDownEnvironment();
+			currentMap = mapGen.NewMap(40, true, 44);
+			PlaceEnvironment();
+		}
+
+		for(int i = activeParticleSystems.Count - 1; i >= 0; i--)
+		{
+			if(!activeParticleSystems[i].IsAlive())
+			{
+				Destroy(activeParticleSystems[i]);
+				activeParticleSystems.RemoveAt(i);
+			}
 		}
 
 	}
 
 	void PlaceEnvironment()
 	{
+		gameActive = false;
 		GameObject parent = new GameObject();
 		parent.transform.position = new Vector3(0,0,0);
 
@@ -77,10 +103,25 @@ public class SceneManager : MonoBehaviour {
 		currentSceneObjects.Add(p1Beacon);
 		p1Beacon.GetComponent<SpawnBeaconController>().SetTargetTag("player2");
 
+		activeParticleSystems.Add(p1Beacon.GetComponent<SpawnBeaconController>().SpawnEffect(p1Beacon.transform.position));
+
 		p2Beacon = (GameObject)GameObject.Instantiate(spawnBeacon, new Vector3(currentMap.StartPos2.x, 0, currentMap.StartPos2.y), Quaternion.identity, parent.transform);
 		currentSceneObjects.Add(p2Beacon);
 		p2Beacon.GetComponent<SpawnBeaconController>().SetTargetTag("player1");
+		p2Beacon.GetComponent<SpawnBeaconController>().SpawnEffect(p2Beacon.transform.position);
+		gameActive = true;
+	}
 
+	void TearDownEnvironment()
+	{
+		for(int i = currentSceneObjects.Count - 1; i >=0; i --)
+		{
+			//GameObject temp = currentSceneObjects[i];
+			//currentSceneObjects.RemoveAt(i);
+			Destroy(currentSceneObjects[i]);
+			currentSceneObjects.RemoveAt(i);
+		}
+		gameActive = false;
 	}
 
 

@@ -2,6 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
+// a player's camera can be set to mask out the other players traps
+// this makes them invisible to the enemy
+
 public class PlayerController : MonoBehaviour {
 
 	private Vector3 velocity;
@@ -47,84 +50,101 @@ public class PlayerController : MonoBehaviour {
 
 		if(tag == "player1")
 		{
-			//Vector3 movementDirection = new Vector3(0,0,0);
-			if(Input.GetKey(KeyCode.A))
-			{
-				//movementDirection -= new Vector3(1, 0, 0);
-				velocity.x -= (acceleration * Time.deltaTime);
-			}
-			else if(Input.GetKey(KeyCode.D))
-			{
-				//movementDirection += new Vector3(1, 0, 0);
-				velocity.x += (acceleration * Time.deltaTime);
-			}
 
-			if(Input.GetKey(KeyCode.W))
-			{
-				//movementDirection += new Vector3(0, 0, 1);
-				velocity.z += (acceleration * Time.deltaTime);
-			}
-			else if(Input.GetKey(KeyCode.S))
-			{
-				//movementDirection -= new Vector3(0, 0, 1);
-				velocity.z -= (acceleration * Time.deltaTime);
-			}
 
-			Vector3 mousePos = Input.mousePosition;
+			velocity.x += Input.GetAxis("Horizontal") * acceleration * Time.deltaTime;
+			velocity.z += Input.GetAxis("Vertical") * acceleration * Time.deltaTime;
 
 			velocity.x -= (friction * velocity.x);
 			velocity.z -= (friction * velocity.z);
 
+			transform.GetComponent<Rigidbody>().velocity = velocity;
+
+			float rightX = Input.GetAxis("RightHorizontal");
+			float rightZ = -Input.GetAxis("RightVertical");
+
+			if(Mathf.Sqrt(Mathf.Pow(rightX,2) + Mathf.Pow(rightZ, 2)) > 0.25)
+			{
+
+				float angle = Mathf.Atan2(rightZ, rightX) * 180 / Mathf.PI;
+				//print(Mathf.Atan2(rightZ, rightX) * 180 / Mathf.PI);
+				model.transform.rotation = Quaternion.Euler(new Vector3(0f, -angle + 90, 0f));
+			}
 
 
-			Vector2 centreToMouse;
+			//float xPress = Input.GetAxisRaw("xButton");
+			if(Input.GetButtonDown("xButton"))
+			{
+				print("x button");
+			}
 
-			centreToMouse.x = mousePos.x - (Screen.width / 2);
-			centreToMouse.y = mousePos.y - (Screen.height / 2);
+			if(Input.GetButtonDown("R1Button"))
+			{
+				print("R1 button");
+			}
 
-			//transform.eulerAngles = new Vector3(0, Mathf.Atan2(centreToMouse.y, centreToMouse.x) * 180 / Mathf.PI, 0);
+			if(Input.GetButtonDown("R2Button"))
+			{
+				print("R2 button");
+			}
+
+			if(Input.GetButtonDown("L1Button"))
+			{
+				print("L1 button");
+			}
+
+			if(Input.GetButtonDown("L2Button"))
+			{
+				print("L2 button");
+			}
 
 
-			//Get the Screen positions of the object
-			Vector2 positionOnScreen = thisCamera.WorldToViewportPoint (transform.position);
 
-			//Get the Screen position of the mouse
-			Vector2 mouseOnScreen = (Vector2)thisCamera.ScreenToViewportPoint(Input.mousePosition);
 
-			//Get the angle between the points
-			float angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen);
 
-			// 0 is left
-			// top of screen is (-)
-			// bottom of screen is (+)
-			model.transform.rotation =  Quaternion.Euler (new Vector3(0f,-angle - 90, 0f));
+		}
+		else 
+		{
+			velocity.x += Input.GetAxisRaw("KeyboardHorizontal") * acceleration * Time.deltaTime;
+			velocity.z += Input.GetAxisRaw("KeyboardVertical") * acceleration * Time.deltaTime;
+
+			velocity.x -= (friction * velocity.x);
+			velocity.z -= (friction * velocity.z);
 
 			transform.GetComponent<Rigidbody>().velocity = velocity;
 
 
-			//print(velocity.x + ", " + velocity.z);
+			//Get the Screen positions of the object
+			Vector2 positionOnScreen = thisCamera.WorldToViewportPoint (transform.position);
+			//Get the Screen position of the mouse
+			Vector2 mouseOnScreen = (Vector2)thisCamera.ScreenToViewportPoint(Input.mousePosition);
+			//Get the angle between the points
+			float angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen);
+			model.transform.rotation =  Quaternion.Euler (new Vector3(0f,-angle - 90, 0f));
 
-			if( (Mathf.Abs(velocity.x) > 0.05f || Mathf.Abs(velocity.z) > 0.05f))
+
+			if(Input.GetMouseButtonDown(0))
 			{
-				//print("go");
-				model.GetComponent<Animation>().Play(animationNameList[1]);
+				print("lmb");
 			}
-			else if(!model.GetComponent<Animation>().IsPlaying(animationNameList[0]))
+
+			if(Input.GetMouseButtonDown(1))
 			{
-				//print("halt");
-				model.GetComponent<Animation>().Play(animationNameList[0]);
+				print("rmb");
 			}
-
-			//int clipCount = model.GetComponent<Animation>().GetClipCount();
-			/*if(!model.GetComponent<Animation>().IsPlaying(animationNameList[2]))
-			{
-				print("attack");
-				model.GetComponent<Animation>().Play(animationNameList[2]);
-			}*/
-
 
 		}
 
+		if( (Mathf.Abs(velocity.x) > 0.05f || Mathf.Abs(velocity.z) > 0.05f))
+		{
+			//print("go");
+			model.GetComponent<Animation>().Play(animationNameList[1]);
+		}
+		else if(!model.GetComponent<Animation>().IsPlaying(animationNameList[0]))
+		{
+			//print("halt");
+			model.GetComponent<Animation>().Play(animationNameList[0]);
+		}
 
 	}
 
