@@ -42,7 +42,7 @@ public class SpawnBeaconController : MonoBehaviour {
 		{
 			containsPlayer1 = true;
 		}
-		else 
+		else if(colliderTag == "player2")
 		{
 			containsPlayer2 = true;
 		}
@@ -56,7 +56,7 @@ public class SpawnBeaconController : MonoBehaviour {
 		{
 			containsPlayer1 = false;
 		}
-		else 
+		else if(colliderTag == "player2")
 		{
 			containsPlayer2 = false;
 		}

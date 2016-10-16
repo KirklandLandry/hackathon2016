@@ -108,6 +108,7 @@ public class PlayerController : MonoBehaviour {
 				{
 					currentState = STATE.attack;
 					model.GetComponent<Animation>().Play(animationNameList[2]);
+					weapon.GetComponent<PlayerWeaponCollision>().SetAttackActive(true);
 				}
 			}
 
@@ -165,6 +166,8 @@ public class PlayerController : MonoBehaviour {
 				{
 					currentState = STATE.attack;
 					model.GetComponent<Animation>().Play(animationNameList[2]);
+					weapon.GetComponent<PlayerWeaponCollision>().SetAttackActive(true);
+
 					/*if(weapon.GetComponent<PlayerWeaponCollision>().containsPlayer1)
 					{
 					}*/
@@ -187,14 +190,15 @@ public class PlayerController : MonoBehaviour {
 			respawnTimer -= Time.deltaTime;
 			if(respawnTimer <= 0)
 			{
-				currentState = STATE.wait;
 				transform.position = startPos;
+				currentState = STATE.wait;
 			}
 		}
 		else if(currentState.Equals(STATE.attack))
 		{
 			if(!model.GetComponent<Animation>().IsPlaying(animationNameList[2]))
 			{
+				weapon.GetComponent<PlayerWeaponCollision>().SetAttackActive(false);
 				currentState = STATE.wait;
 			}
 

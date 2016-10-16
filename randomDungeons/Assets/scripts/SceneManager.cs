@@ -19,6 +19,8 @@ public class SceneManager : MonoBehaviour {
 	public GameObject spawnBeacon;
 	public GameObject p1Avatar;
 	public GameObject p2Avatar;
+	public GameObject p1WinMessage;
+	public GameObject p2WinMessage;
 
 	private List<GameObject> currentSceneObjects;
 	private List<ParticleSystem> activeParticleSystems;
@@ -37,6 +39,9 @@ public class SceneManager : MonoBehaviour {
 		mapGen = new MapGenerator();
 		currentMap = mapGen.NewMap(30, true, 44);
 		PlaceEnvironment();
+
+		p1WinMessage.SetActive(false);
+		p2WinMessage.SetActive(false);
 	}
 
 
@@ -46,14 +51,16 @@ public class SceneManager : MonoBehaviour {
 	{
 		if(gameActive)
 		{
-			/*if(p1Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
+			if(p1Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
 			{
 				print("p2 wins");
+				p2WinMessage.SetActive(true);
 			}
 			else if (p2Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
 			{
 				print("p1 wins");
-			}*/
+				p1WinMessage.SetActive(true);
+			}
 		}
 		if(Input.GetKeyDown(KeyCode.G))
 		{
@@ -115,6 +122,9 @@ public class SceneManager : MonoBehaviour {
 
 	void TearDownEnvironment()
 	{
+		p1WinMessage.SetActive(false);
+		p2WinMessage.SetActive(false);
+
 		for(int i = currentSceneObjects.Count - 1; i >=0; i --)
 		{
 			//GameObject temp = currentSceneObjects[i];
