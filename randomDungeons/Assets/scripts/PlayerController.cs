@@ -243,9 +243,12 @@ public class PlayerController : MonoBehaviour {
 
 	public void hit()
 	{
-		currentState = STATE.die;
-		model.GetComponent<Animation>().Play(animationNameList[4]);
-		respawnTimer = 3.0f;
+		if(!currentState.Equals(STATE.die))
+		{
+			currentState = STATE.die;
+			model.GetComponent<Animation>().Play(animationNameList[4]);
+			respawnTimer = 3.0f;
+		}
 	}
 
 	private bool WaitingOrWalking()
