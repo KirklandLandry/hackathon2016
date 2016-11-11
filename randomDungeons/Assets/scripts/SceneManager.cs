@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using UnityEngine.UI;
 
 // SPAWN BEACON RULES 
 // can't get hit if you're int a spawn beacon
@@ -21,6 +21,10 @@ public class SceneManager : MonoBehaviour {
 	public GameObject p2Avatar;
 	public GameObject p1WinMessage;
 	public GameObject p2WinMessage;
+    public Text p1ScoreLabel;
+    public Text p2ScoreLabel;
+    private int p1Score;
+    private int p2Score;
 
 	private List<GameObject> currentSceneObjects;
 	private List<ParticleSystem> activeParticleSystems;
@@ -42,9 +46,16 @@ public class SceneManager : MonoBehaviour {
 
 		p1WinMessage.SetActive(false);
 		p2WinMessage.SetActive(false);
-	}
 
+        p1Score = 0;
+        p2Score = 0;
+    }
 
+    void SetScoreLabels()
+    {
+        p1ScoreLabel.text = "P1 Score " + p1Score.ToString();
+        p2ScoreLabel.text = "P2 Score " + p2Score.ToString();
+    }
 
 	// Update is called once per frame
 	void Update () 
@@ -55,20 +66,37 @@ public class SceneManager : MonoBehaviour {
 			{
 				print("p2 wins");
 				p2WinMessage.SetActive(true);
-			}
+                gameActive = false;
+                p1Avatar.GetComponent<PlayerController>().DisableControl();
+                p2Avatar.GetComponent<PlayerController>().DisableControl();
+                p2Score++;
+                SetScoreLabels();
+            }
 			else if (p2Beacon.GetComponent<SpawnBeaconController>().WinConditionSatisfied())
 			{
 				print("p1 wins");
 				p1WinMessage.SetActive(true);
-			}
+                gameActive = false;
+                p1Avatar.GetComponent<PlayerController>().DisableControl();
+                p2Avatar.GetComponent<PlayerController>().DisableControl();
+                p1Score++;
+                SetScoreLabels();
+            }
 		}
-		if(Input.GetKeyDown(KeyCode.G))
-		{
-			TearDownEnvironment();
-			currentMap = mapGen.NewMap(40, true, 44);
-			PlaceEnvironment();
-		}
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                TearDownEnvironment();
+                currentMap = mapGen.NewMap(40, true, 44);
+                PlaceEnvironment();
+                gameActive = true;
+                p1Avatar.GetComponent<PlayerController>().EnableControl();
+                p2Avatar.GetComponent<PlayerController>().EnableControl();
+            }
+        }
 
+        // manage particles 
 		for(int i = activeParticleSystems.Count - 1; i >= 0; i--)
 		{
 			if(!activeParticleSystems[i].IsAlive())
@@ -77,7 +105,6 @@ public class SceneManager : MonoBehaviour {
 				activeParticleSystems.RemoveAt(i);
 			}
 		}
-
 	}
 
 	void PlaceEnvironment()

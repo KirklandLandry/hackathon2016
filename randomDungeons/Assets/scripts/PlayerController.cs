@@ -33,10 +33,13 @@ public class PlayerController : MonoBehaviour {
 
 	public Vector3 startPos;
 
+    private bool controlEnabled;
+
 	void Start () 
 	{
-		// prevent physics based rotations
-		transform.GetComponent<Rigidbody>().freezeRotation = true;
+        controlEnabled = true;
+        // prevent physics based rotations
+        transform.GetComponent<Rigidbody>().freezeRotation = true;
 	
 		animationNameList = new List<string>();
 		int count = 0;
@@ -61,184 +64,178 @@ public class PlayerController : MonoBehaviour {
 		}
 
 	}
+
+    public void DisableControl()
+    {
+        controlEnabled = false;
+        transform.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        if (!currentState.Equals(STATE.die))
+        {
+            model.GetComponent<Animation>().Play(animationNameList[0]);
+        }
+    }
+
+    public void EnableControl()
+    {
+        controlEnabled = true;
+    }
 	
 	void Update () 
 	{
-		float dt = Time.deltaTime;
+        if(controlEnabled)
+        {
+            float dt = Time.deltaTime;
 
-		if(tag == "player1")
-		{
+            if (tag == "player1")
+            {
 
-			if(WaitingOrWalking())
-			{
-				velocity.x += Input.GetAxis("Horizontal") * acceleration * Time.deltaTime;
-				velocity.z += Input.GetAxis("Vertical") * acceleration * Time.deltaTime;
-
-
-
-				float rightX = Input.GetAxis("RightHorizontal");
-				float rightZ = -Input.GetAxis("RightVertical");
-
-				if(Mathf.Sqrt(Mathf.Pow(rightX,2) + Mathf.Pow(rightZ, 2)) > 0.25)
-				{
-
-					float angle = Mathf.Atan2(rightZ, rightX) * 180 / Mathf.PI;
-					//print(Mathf.Atan2(rightZ, rightX) * 180 / Mathf.PI);
-					model.transform.rotation = Quaternion.Euler(new Vector3(0f, -angle + 90, 0f));
-				}
-
-			}
-
-			velocity.x -= (friction * velocity.x);
-			velocity.z -= (friction * velocity.z);
-
-			transform.GetComponent<Rigidbody>().velocity = velocity;
-
-
-			//float xPress = Input.GetAxisRaw("xButton");
-			if(Input.GetButtonDown("xButton"))
-			{
-				//print("x button");
-			}
-
-			if(Input.GetButtonDown("R1Button"))
-			{
-				//print("R1 button");
-				if(WaitingOrWalking())
-				{
-					currentState = STATE.attack;
-					model.GetComponent<Animation>().Play(animationNameList[2]);
-					weapon.GetComponent<PlayerWeaponCollision>().SetAttackActive(true);
-				}
-			}
-
-			if(Input.GetButtonDown("R2Button"))
-			{
-				//print("R2 button");
-			}
-
-			if(Input.GetButtonDown("L1Button"))
-			{
-				//print("L1 button");
-			}
-
-			if(Input.GetButtonDown("L2Button"))
-			{
-				//print("L2 button");
-			}
+                if (WaitingOrWalking())
+                {
+                    velocity.x += Input.GetAxis("Horizontal") * acceleration * Time.deltaTime;
+                    velocity.z += Input.GetAxis("Vertical") * acceleration * Time.deltaTime;
 
 
 
+                    float rightX = Input.GetAxis("RightHorizontal");
+                    float rightZ = -Input.GetAxis("RightVertical");
+
+                    if (Mathf.Sqrt(Mathf.Pow(rightX, 2) + Mathf.Pow(rightZ, 2)) > 0.25)
+                    {
+
+                        float angle = Mathf.Atan2(rightZ, rightX) * 180 / Mathf.PI;
+                        //print(Mathf.Atan2(rightZ, rightX) * 180 / Mathf.PI);
+                        model.transform.rotation = Quaternion.Euler(new Vector3(0f, -angle + 90, 0f));
+                    }
+
+                }
+
+                velocity.x -= (friction * velocity.x);
+                velocity.z -= (friction * velocity.z);
+
+                transform.GetComponent<Rigidbody>().velocity = velocity;
 
 
-		}
-		else 
-		{
-			if(WaitingOrWalking())
-			{
-				velocity.x += Input.GetAxisRaw("KeyboardHorizontal") * acceleration * Time.deltaTime;
-				velocity.z += Input.GetAxisRaw("KeyboardVertical") * acceleration * Time.deltaTime;
+                //float xPress = Input.GetAxisRaw("xButton");
+                if (Input.GetButtonDown("xButton"))
+                {
+                    //print("x button");
+                }
+
+                if (Input.GetButtonDown("R1Button"))
+                {
+                    //print("R1 button");
+                    if (WaitingOrWalking())
+                    {
+                        currentState = STATE.attack;
+                        model.GetComponent<Animation>().Play(animationNameList[2]);
+                        weapon.GetComponent<PlayerWeaponCollision>().SetAttackActive(true);
+                    }
+                }
+
+                if (Input.GetButtonDown("R2Button"))
+                {
+                    //print("R2 button");
+                }
+
+                if (Input.GetButtonDown("L1Button"))
+                {
+                    //print("L1 button");
+                }
+
+                if (Input.GetButtonDown("L2Button"))
+                {
+                    //print("L2 button");
+                }
+
+
+
+            }
+            else
+            {
+                if (WaitingOrWalking())
+                {
+                    velocity.x += Input.GetAxisRaw("KeyboardHorizontal") * acceleration * Time.deltaTime;
+                    velocity.z += Input.GetAxisRaw("KeyboardVertical") * acceleration * Time.deltaTime;
 
 
 
 
-				//Get the Screen positions of the object
-				Vector2 positionOnScreen = thisCamera.WorldToViewportPoint (transform.position);
-				//Get the Screen position of the mouse
-				Vector2 mouseOnScreen = (Vector2)thisCamera.ScreenToViewportPoint(Input.mousePosition);
-				//Get the angle between the points
-				float angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen);
-				model.transform.rotation =  Quaternion.Euler (new Vector3(0f,-angle - 90, 0f));
+                    //Get the Screen positions of the object
+                    Vector2 positionOnScreen = thisCamera.WorldToViewportPoint(transform.position);
+                    //Get the Screen position of the mouse
+                    Vector2 mouseOnScreen = (Vector2)thisCamera.ScreenToViewportPoint(Input.mousePosition);
+                    //Get the angle between the points
+                    float angle = AngleBetweenTwoPoints(positionOnScreen, mouseOnScreen);
+                    model.transform.rotation = Quaternion.Euler(new Vector3(0f, -angle - 90, 0f));
 
 
-			}
+                }
 
-			velocity.x -= (friction * velocity.x);
-			velocity.z -= (friction * velocity.z);
+                velocity.x -= (friction * velocity.x);
+                velocity.z -= (friction * velocity.z);
 
-			transform.GetComponent<Rigidbody>().velocity = velocity;
+                transform.GetComponent<Rigidbody>().velocity = velocity;
 
-			if(Input.GetMouseButtonDown(0))
-			{
-				//print("lmb");
+                if (Input.GetMouseButtonDown(0))
+                {
+                    //print("lmb");
 
-				if(WaitingOrWalking())
-				{
-					currentState = STATE.attack;
-					model.GetComponent<Animation>().Play(animationNameList[2]);
-					weapon.GetComponent<PlayerWeaponCollision>().SetAttackActive(true);
+                    if (WaitingOrWalking())
+                    {
+                        currentState = STATE.attack;
+                        model.GetComponent<Animation>().Play(animationNameList[2]);
+                        weapon.GetComponent<PlayerWeaponCollision>().SetAttackActive(true);
 
-					/*if(weapon.GetComponent<PlayerWeaponCollision>().containsPlayer1)
-					{
-					}*/
-				}
-			}
+                        /*if(weapon.GetComponent<PlayerWeaponCollision>().containsPlayer1)
+                        {
+                        }*/
+                    }
+                }
 
-			if(Input.GetMouseButtonDown(1))
-			{
-				//print("rmb");
-			}
+                if (Input.GetMouseButtonDown(1))
+                {
+                    //print("rmb");
+                }
 
-		}
+            }
 
-		if(currentState.Equals(STATE.die))
-		{
-			if(!model.GetComponent<Animation>().IsPlaying(animationNameList[4]))
-			{
-				//currentState = STATE.wait;
-			}
-			respawnTimer -= Time.deltaTime;
-			if(respawnTimer <= 0)
-			{
-				transform.position = startPos;
-				currentState = STATE.wait;
-			}
-		}
-		else if(currentState.Equals(STATE.attack))
-		{
-			if(!model.GetComponent<Animation>().IsPlaying(animationNameList[2]))
-			{
-				weapon.GetComponent<PlayerWeaponCollision>().SetAttackActive(false);
-				currentState = STATE.wait;
-			}
+            if (currentState.Equals(STATE.die))
+            {
+                if (!model.GetComponent<Animation>().IsPlaying(animationNameList[4]))
+                {
+                    //currentState = STATE.wait;
+                }
+                respawnTimer -= Time.deltaTime;
+                if (respawnTimer <= 0)
+                {
+                    transform.position = startPos;
+                    currentState = STATE.wait;
+                }
+            }
+            else if (currentState.Equals(STATE.attack))
+            {
+                if (!model.GetComponent<Animation>().IsPlaying(animationNameList[2]))
+                {
+                    weapon.GetComponent<PlayerWeaponCollision>().SetAttackActive(false);
+                    currentState = STATE.wait;
+                }
 
-		}
-		else 
-		{
-			if( (Mathf.Abs(velocity.x) > 0.05f || Mathf.Abs(velocity.z) > 0.05f))
-			{
-				//print("go");
-				model.GetComponent<Animation>().Play(animationNameList[1]);
-			}
-			else if(!model.GetComponent<Animation>().IsPlaying(animationNameList[0]))
-			{
-				//print("halt");
-				model.GetComponent<Animation>().Play(animationNameList[0]);
-			}
-		}
+            }
+            else
+            {
+                if ((Mathf.Abs(velocity.x) > 0.05f || Mathf.Abs(velocity.z) > 0.05f))
+                {
+                    //print("walking");
+                    model.GetComponent<Animation>().Play(animationNameList[1]);
+                }
+                else if (!model.GetComponent<Animation>().IsPlaying(animationNameList[0]))
+                {
+                    //print("neutral");
+                    model.GetComponent<Animation>().Play(animationNameList[0]);
+                }
+            }
+        }
 	
-
-		/*if(currentState.Equals(STATE.wait))
-		{
-			print("asdf");
-			if ((Mathf.Abs(velocity.x) > 0.0f) || (Mathf.Abs(velocity.z) > 0.00f))
-
-			{
-				currentState = STATE.walk;
-				model.GetComponent<Animation>().Play(animationNameList[1]);
-
-			}
-		}
-
-		if(currentState.Equals(STATE.walk) && ((Mathf.Abs(velocity.x) <= 0.01f) || (Mathf.Abs(velocity.z) <= 0.01f)))
-		{
-			currentState = STATE.wait;
-			model.GetComponent<Animation>().Play(animationNameList[0]);
-
-		}*/
-
-
-
 	}
 
 	public void hit()
