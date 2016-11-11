@@ -78,6 +78,7 @@ public class PlayerController : MonoBehaviour {
     public void EnableControl()
     {
         controlEnabled = true;
+        model.GetComponent<Animation>().Play(animationNameList[0]);
     }
 	
 	void Update () 

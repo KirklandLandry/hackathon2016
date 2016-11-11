@@ -85,6 +85,10 @@ public class SceneManager : MonoBehaviour {
 		}
         else
         {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Application.Quit();
+            }
             if (Input.GetKeyDown(KeyCode.R))
             {
                 TearDownEnvironment();

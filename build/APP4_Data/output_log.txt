@@ -1,0 +1,59 @@
+Initialize engine version: 5.4.1f1 (649f48bbbf0f)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: NVIDIA GeForce GTX 560 Ti (ID=0x1200)
+    Vendor:   NVIDIA
+    VRAM:     972 MB
+Begin MonoManager ReloadAssembly
+Platform assembly: S:\CS4482-App4\build\APP4_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading S:\CS4482-App4\build\APP4_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: S:\CS4482-App4\build\APP4_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading S:\CS4482-App4\build\APP4_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: S:\CS4482-App4\build\APP4_Data\Managed\Assembly-UnityScript.dll (this message is harmless)
+Loading S:\CS4482-App4\build\APP4_Data\Managed\Assembly-UnityScript.dll into Unity Child Domain
+Platform assembly: S:\CS4482-App4\build\APP4_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading S:\CS4482-App4\build\APP4_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: S:\CS4482-App4\build\APP4_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading S:\CS4482-App4\build\APP4_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+- Completed reload, in  0.416 seconds
+Platform assembly: S:\CS4482-App4\build\APP4_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: S:\CS4482-App4\build\APP4_Data\Managed\System.dll (this message is harmless)
+Platform assembly: S:\CS4482-App4\build\APP4_Data\Managed\UnityScript.Lang.dll (this message is harmless)
+Platform assembly: S:\CS4482-App4\build\APP4_Data\Managed\Boo.Lang.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 2970x1680 at 0,-283
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 1.261696 ms
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 543c -> priority: 1 
+  Thread -> id: 27dc -> priority: 1 
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 12.240379 ms
+
+Unloading 4 unused Assets to reduce memory usage. Loaded Objects now: 302.
+Total: 0.259384 ms (FindLiveObjects: 0.021775 ms CreateObjectMapping: 0.013449 ms MarkObjects: 0.219035 ms  DeleteObjects: 0.004803 ms)
+
+Unloading 4 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 0.807293 ms
+
+Unloading 2 unused Assets to reduce memory usage. Loaded Objects now: 452.
+Total: 0.579291 ms (FindLiveObjects: 0.051556 ms CreateObjectMapping: 0.041949 ms MarkObjects: 0.475537 ms  DeleteObjects: 0.008966 ms)
+
+hit p1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+hit p1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+hit p1
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
+p2 wins
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/UnityEngineDebugBindings.gen.cpp Line: 42)
+
